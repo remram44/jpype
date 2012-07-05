@@ -116,7 +116,10 @@ def _getClassFor(name) :
 	
 
 def JArray(t, ndims=1) :
-	if issubclass(t, _jwrapper._JWrapper) :
+	if isinstance(t, str) or isinstance(t, unicode) :
+		pass
+
+	elif issubclass(t, _jwrapper._JWrapper) :
 		t = t.typeName
 
 	elif isinstance(t, _JavaArray) :
@@ -124,9 +127,6 @@ def JArray(t, ndims=1) :
 
 	elif issubclass(t, _jclass._JAVAOBJECT):
 		t = t.__name__
-		
-	elif not isinstance(t, str) and not isinstance(t, unicode) :
-		raise TypeError, "Argument must be a java class, java array class, java wrapper or string represeing a java class"
 		
 	arrayTypeName = t + ('[]'*ndims)
 	
