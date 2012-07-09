@@ -22,7 +22,6 @@ from _jproxy import *
 from _jexception import *
 from _core import *
 from _gui import *
-import reflect
 import nio
 
 

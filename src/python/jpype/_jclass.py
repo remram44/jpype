@@ -81,17 +81,48 @@ def _javaInit(self, *args) :
 def _javaGetAttr(self, name) :
 	try :
 		r = object.__getattribute__(self, name)
+		if isinstance(r, _jpype._JavaMethod) :
+			return _jpype._JavaBoundMethod(r, self) 
+		return r
 	except AttributeError, ex :
+		# This overrides access to an attribute, to allow access to static
+		# fields
+		# Do not provide access to reflection methods here!
+		# javaobject.getDeclaredMethods() shouldn't work, only
+		# javaclass.getDeclaredMethods()
 		if name in dir(self.__class__.__metaclass__) :
 			r = object.__getattribute__(self.__class__, name)
-		else:
-			raise ex
-		
-	if isinstance(r, _jpype._JavaMethod) :
-		return _jpype._JavaBoundMethod(r, self) 
-	return r
+			if isinstance(r, property):
+				return r
+		raise
 
 class _JavaClass(type) :  
+	def getConstructors(clas):
+		return clas.__javaclass__.getConstructors()
+
+	def getDeclaredConstructors(clas):
+		return clas.__javaclass__.getDeclaredConstructors()
+
+	def getDeclaredFields(clas) :
+		'''Returns an array of Field objects reflecting all the fields declared by the class or interface represented by this Class object.'''
+		return clas.__javaclass__.getDeclaredFields()
+
+	def getDeclaredMethods(clas):
+		'''Returns an array of Method objects reflecting all the methods declared by the class or interface represented by this Class object.'''
+		return clas.__javaclass__.getDeclaredMethods()
+
+	def getFields(clas):
+		'''Returns an array containing Field objects reflecting all the accessible public fields of the class or interface represented by this Class object.'''
+		return clas.__javaclass__.getFields()
+
+	def getMethods(clas):
+		'''Returns an array containing Method objects reflecting all the public member methods of the class or interface represented by this Class object, including those declared by the class or interface and those inherited from superclasses and superinterfaces.'''
+		return clas.__javaclass__.getMethods()
+
+	def getModifiers(clas):
+		'''Returns the Java language modifiers for this class or interface, encoded in an integer.'''
+		return clas.__javaclass__.getModifiers()
+
 	def __new__(mcs, jc) :
 		bases = []
 		name = jc.getName()
