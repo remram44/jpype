@@ -28,11 +28,12 @@ class JPypeSetup(object):
         if self.javaHome is None :
             print "environment variable JAVA_HOME must be set"
             sys.exit(-1)
+        if self.javaHome[0] == self.javaHome[-1] == '"':
+            self.javaHome = self.javaHome[1:-1]
         self.jdkInclude = "win32"
         self.libraries = ["Advapi32"]
         self.libraryDir = [self.javaHome+"/lib"]
         self.macros = [ ("WIN32",1) ]
-        self.extra_compile_args = ['/EHsc']
     
     def setupMacOSX(self):
         self.javaHome = '/Library/Java/Home'
